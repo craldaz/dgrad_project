@@ -6,18 +6,18 @@
 using namespace std;                                                                           
                                                                                                
 int main(int argc, char* argv[]){                                                              
-  string xyzfile1;                                                                             
-  if (argc < 2){                                                                               
+  string xyzfile, gradfile;                                                                             
+  if (argc < 3){                                                                               
     cout << "Must include xyzfile" <<endl;                                                     
     return -1;                                                                                 
   }                                                                                            
-  xyzfile1=argv[1];                                                                            
-                                                                                               
+  xyzfile=argv[1];                                                                            
+ 	gradfile=argv[2];                                                                                              
                                                                                                                    
   ICoord test;                                                                                 
 	test.isOpt=1;
 	test.farBond=1.;
-  test.init(xyzfile1);                                                                         
+  test.init(xyzfile,gradfile);                                                                         
                                                                                                
   return 0;                                                                                    
 }                             

@@ -3,6 +3,7 @@
 
 #include "stringtools.h"
 #include "pTable.h"
+#include "grad.h"
 
 class ICoord {
 
@@ -47,6 +48,7 @@ class ICoord {
   	int* coordn;                  //coordination number
   	int nimptor;
 
+  	Gradient grad1;
   	double farBond;
 		
     double* bondd;
@@ -65,7 +67,7 @@ class ICoord {
 		int isOpt;
 		void print_xyz();
   	void print_ic();
-		int init(string xyzfile);
+		int init(string xyzfile,string gradfile);
 		int ic_create();	
   	void update_ic();
   	void update_bonds();

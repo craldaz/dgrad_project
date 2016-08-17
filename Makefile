@@ -35,7 +35,7 @@ OFLAGS =  # optimization
 .cpp.o:
 	$(FC) -c -g $(DFLAGS) $<
 
-OBJECTS = main.o pTable.o stringtools.o mem.o icoord.o print.o
+OBJECTS = main.o pTable.o stringtools.o mem.o icoord.o print.o grad.o
 
 $(CMD) : $(OBJECTS)
 	$(FC) $(DEBUG_FLAGS) $(OFLAGS) $(OBJECTS) $(LINKERFLAGS)   -o ./$(CMD)
@@ -52,6 +52,7 @@ depend :
 # DO NOT DELETE created with g++ -MM *.cpp *.c
 mem.o: mem.cpp icoord.h 
 print.o: print.cpp icoord.h
+grad.o: grad.cpp grad.h
 icoord.o: icoord.cpp icoord.h stringtools.h pTable.h 
 main.o: main.cpp icoord.h 
 pTable.o: pTable.cpp pTable.h

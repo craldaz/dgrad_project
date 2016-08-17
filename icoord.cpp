@@ -5,7 +5,8 @@ using namespace std;
 //#include "utils.h"
 #define MAX_FRAG_DIST 12.0
 
-int ICoord::init(string xyzfile){
+int ICoord::init(string xyzfile,string gradfile)
+{
 
  printf("\n");
  cout << " xyzfile: " << xyzfile << endl;
@@ -17,6 +18,8 @@ int ICoord::init(string xyzfile){
  int done = ic_create();
  print_ic();
  printf("\n\n");
+
+ grad1.grad_read(gradfile);
 
  return 1;
 }
@@ -96,6 +99,8 @@ void ICoord::structure_read(string xyzfile){
   infile.close();
   cout << "Finished reading information from structure file" << endl;
 }
+
+
 
 int ICoord::ic_create()
 {
