@@ -780,3 +780,111 @@ int ICoord::bmat_create()
 
   return 0;
 }
+
+
+int ICoord::grad_to_q() 
+{
+
+
+  printf(" in grad_to_q \n");
+
+  int N3 = 3*natoms;
+  int len_d = nicd0;
+  int len0 = nbonds+nangles+ntor;
+  for (int i=0;i<len_d;i++)
+    pgradq[i] = gradq[i];
+  for (int i=0;i<len_d;i++)
+    gradq[i] = 0.0;
+
+
+  for (int i=0;i<len_d;i++)
+  for (int j=0;j<N3;j++)
+    gradq[i] += bmatti[i*N3+j] * grad[j];
+
+  gradrms = 0.;
+  for (int i=0;i<nicd;i++)
+    gradrms+=gradq[i]*gradq[i];
+  gradrms = sqrt(gradrms/nicd);
+
+#if 1
+// for Hessian update
+  for (int i=0;i<len0;i++) pgradqprim[i] = gradqprim[i];
+  for (int i=0;i<len0;i++) gradqprim[i] = 0.;
+  for (int i=0;i<len0;i++)
+  for (int j=0;j<len_d;j++)
+    gradqprim[i] += Ut[j*len0+i]*gradq[j];
+#endif
+
+  print_gradq();
+
+
+  return 0;
+}
+void ICoord::print_gradq()
+{
+
+  printf(" Gradient in delocalized IC:\n");
+  int len = nicd0;
+  for (int i=0;i<len;i++)
+    printf(" %12.10f",gradq[i]);
+  printf("\n");
+
+  return;
+}
+
+
+void ICoord::project_grad()
+{
+	
+  int len = nbonds+nangles+ntor;
+	printf(" In project_grad\n"); 
+
+  nicd = nicd0;
+	double* gradq0 = new double[nicd];
+	for (int i=0;i<nicd;i++)
+		gradq0[i] = gradq[i];
+
+  //take gradq vector, project it out of all Ut
+  double norm = 0.;
+  for (int i=0;i<len;i++)
+    norm += gradq0[i]*gradq0[i];
+  norm = sqrt(norm);
+  for (int j=0;j<len;j++)
+    gradq0[j] = gradq0[j]/norm;
+
+  double* dots = new double[len];
+  for (int i=0;i<len;i++) dots[i] =0.;
+
+  double* Cn = new double[len];
+  for (int i=0;i<len;i++) Cn[i] =0.;
+
+  for (int i=0;i<len;i++)
+  for (int j=0;j<len;j++)
+    dots[i] += gradq0[j]*Ut[i*len+j];
+ 
+  for (int i=0;i<nicd0;i++) //CPMZ fix? right now subspace projection
+  for (int j=0;j<len;j++)
+    Cn[j] += dots[i]*Ut[i*len+j];
+
+  norm = 0.;
+  for (int i=0;i<len;i++)
+    norm += Cn[i]*Cn[i];
+  norm = sqrt(norm);
+  //printf(" Cn norm: %1.2f \n",norm);
+  for (int j=0;j<len;j++)
+    Cn[j] = Cn[j]/norm;
+
+#if 0
+	//Save this to take the overlap with (before Schmidt'ing)
+	for (int j=0;j<len;j++)
+		C[j]=Cn[j];
+#endif
+#if 1
+  printf(" projected gradient constraint: ");
+  for (int i=0;i<len;i++)
+    printf(" %1.3f",gradq0[i]);
+  printf("\n");
+#endif
+
+	delete [] gradq0; 
+}

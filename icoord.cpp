@@ -8,8 +8,9 @@ using namespace std;
 
 int ICoord::init(string xyzfile,string gradfile)
 {
-
+	
  printf("\n");
+ cout << "Version: " << VERSION << endl;
  cout << " xyzfile: " << xyzfile << endl;
  structure_read(xyzfile);
  print_xyz();
@@ -21,6 +22,12 @@ int ICoord::init(string xyzfile,string gradfile)
 
  grad1.grad_read(gradfile);
 
+	bmat_alloc();                                                                                              
+	bmatp_create();
+	bmatp_to_U();
+	bmat_create();
+	grad_to_q();
+	project_grad();
  return 1;
 }
 

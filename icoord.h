@@ -94,6 +94,9 @@ class ICoord {
   	void bmatp_dqtdx(int a1, int a2, int a3, int a4, double* dqtdx);
   	int bmatp_to_U();
 		int bmat_create();
+		int grad_to_q();
+		void print_gradq();
+		void project_grad();
   	double* Ut;
   	double* Ut0;
   	double* bmat;
@@ -107,6 +110,8 @@ class ICoord {
   	double* pgradq;
   	double* gradqprim;
   	double* pgradqprim;
+		double gradrms;
+		double pgradrms;
   	double* dq0;
   	double* dqprim;
   	double* q;
