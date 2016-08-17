@@ -1,4 +1,5 @@
 #include "icoord.h"
+#include "utils.h"
 using namespace std; 
 
 
@@ -17,7 +18,6 @@ int ICoord::init(string xyzfile,string gradfile)
 
  int done = ic_create();
  print_ic();
- printf("\n\n");
 
  grad1.grad_read(gradfile);
 

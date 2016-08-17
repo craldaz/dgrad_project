@@ -76,6 +76,8 @@ class ICoord {
   	void update_imptor();
   	void update_nonbond();
 		double getR(int i);	
+  	int nicd;
+    int nicd0; //before constraint applied
   	double distance(int i, int j);
   	double angle_val(int i, int j, int k);
   	double torsion_val(int i, int j, int k, int l); // for imptor and torsion
@@ -84,6 +86,33 @@ class ICoord {
   	int angle_num(int b1, int b2, int b3);
   	int tor_num(int b1, int b2, int b3, int b4);
   	int isTM(int anum);
+  	// Gradient terms
+  	int bmat_alloc();
+		int bmatp_create();
+  	void bmatp_dqbdx(int a1, int a2, double* dqbdx);
+  	void bmatp_dqadx(int a1, int a2, int a3, double* dqadx);
+  	void bmatp_dqtdx(int a1, int a2, int a3, int a4, double* dqtdx);
+  	int bmatp_to_U();
+		int bmat_create();
+  	double* Ut;
+  	double* Ut0;
+  	double* bmat;
+  	double* bmatti;
+  	double* bmatp; // in primitives
+  	double* grad;
+		double* dgrad;
+		 double* pgrad;
+  	double* gradq;
+		double* dgradq;
+  	double* pgradq;
+  	double* gradqprim;
+  	double* pgradqprim;
+  	double* dq0;
+  	double* dqprim;
+  	double* q;
+  	double MAXAD;
+  	double DMAX;
+  	double DMIN0;
 };
 
 

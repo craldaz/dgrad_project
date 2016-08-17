@@ -69,3 +69,6 @@ void Gradient::grad_read(string gradfile)
   infile.close();
   cout << "Finished reading information from structure file" << endl;
 }
+
+
+

@@ -18,6 +18,9 @@ int main(int argc, char* argv[]){
 	test.isOpt=1;
 	test.farBond=1.;
   test.init(xyzfile,gradfile);                                                                         
-                                                                                               
+ 	test.bmat_alloc();                                                                                              
+	test.bmatp_create();
+	test.bmatp_to_U();
+	test.bmat_create();
   return 0;                                                                                    
 }                             
