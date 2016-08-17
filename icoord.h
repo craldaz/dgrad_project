@@ -77,6 +77,7 @@ class ICoord {
   	void update_nonbond();
 		double getR(int i);	
   	int nicd;
+  	int ixflag;
     int nicd0; //before constraint applied
   	double distance(int i, int j);
   	double angle_val(int i, int j, int k);
@@ -97,6 +98,7 @@ class ICoord {
 		int grad_to_q();
 		void print_gradq();
 		void project_grad();
+		int ic_to_xyz();
   	double* Ut;
   	double* Ut0;
   	double* bmat;

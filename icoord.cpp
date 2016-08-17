@@ -20,7 +20,8 @@ int ICoord::init(string xyzfile,string gradfile)
  int done = ic_create();
  print_ic();
 
- grad1.grad_read(gradfile);
+ grad1.grad_read(gradfile,grad);
+ grad1.print_grad();	
 
 	bmat_alloc();                                                                                              
 	bmatp_create();
@@ -28,6 +29,13 @@ int ICoord::init(string xyzfile,string gradfile)
 	bmat_create();
 	grad_to_q();
 	project_grad();
+	printf("\n\n\n");
+	printf(" Stepping 0.5 along the constraint vector\n");
+  for (int i=0;i<nicd0;i++) 
+    dq0[i] = 0.;	
+	dq0[nicd0 -1] = 0.5; 
+	ic_to_xyz();
+	print_xyz();
  return 1;
 }
 

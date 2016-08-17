@@ -3,6 +3,7 @@
 
 void ICoord::alloc_mem()
 {
+ grad = new double[3*natoms];
  nbonds = 0;
  max_bonds=natoms*natoms+8;
  bonds = new int*[max_bonds];

@@ -21,7 +21,8 @@ class Gradient {
 	double* amasses; 
 	public: 
    	double* grad; 
-		void grad_read(string gradfile);	
+		void grad_read(string gradfile,double* grad);	
+		void print_grad(); 
 };
 
 #endif

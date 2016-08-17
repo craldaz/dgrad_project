@@ -600,7 +600,7 @@ int ICoord::bmatp_to_U()
   delete [] tmp;
   delete [] G;
   delete [] e;
-  //delete [] U;
+  delete [] U;
 
   return 0;
 }
@@ -806,7 +806,7 @@ int ICoord::grad_to_q()
     gradrms+=gradq[i]*gradq[i];
   gradrms = sqrt(gradrms/nicd);
 
-#if 1
+#if 0
 // for Hessian update
   for (int i=0;i<len0;i++) pgradqprim[i] = gradqprim[i];
   for (int i=0;i<len0;i++) gradqprim[i] = 0.;
@@ -885,6 +885,225 @@ void ICoord::project_grad()
     printf(" %1.3f",gradq0[i]);
   printf("\n");
 #endif
+  for (int i=0;i<len;i++) dots[i] =0.;
+  for (int i=0;i<len;i++) 
+  for (int j=0;j<len;j++)
+    dots[i] += Cn[j]*Ut[i*len+j];
 
+//  for (int i=0;i<nicd0;i++)
+//    printf(" dots[%i]: %1.2f \n",i,dots[i]);
+
+  for (int i=0;i<nicd0;i++)
+  {
+    if (i!=nicd0-1)
+    for (int j=0;j<len;j++)
+      Ut[i*len+j] -= dots[i] * Cn[j];
+
+    for (int k=0;k<i;k++)
+    {
+      double dot2 = 0.;
+      for (int j=0;j<len;j++)
+        dot2 += Ut[i*len+j] * Ut[k*len+j];
+
+      for (int j=0;j<len;j++)
+        Ut[i*len+j] -= dot2 * Ut[k*len+j];
+    } // loop k over previously formed vectors
+ 
+    double norm = 0.;
+    for (int j=0;j<len;j++)
+      norm += Ut[i*len+j] * Ut[i*len+j];
+    norm = sqrt(norm);
+    if (abs(norm)<0.00001) norm = 1;
+    if (abs(norm)<0.00001) printf(" WARNING: small norm: %1.7f \n",norm);
+    for (int j=0;j<len;j++)
+      Ut[i*len+j] = Ut[i*len+j]/norm;
+  }
+
+  for (int j=0;j<len;j++)
+    Ut[nicd*len+j] = Cn[j];
+#if 0
+  printf(" printing Cn vs. Ut[nicd*len]\n");
+  for (int j=0;j<len;j++)
+    printf(" %1.2f/%1.2f\n",Cn[j],Ut[nicd*len+j]);
+#endif
+#if 1
+  printf(" printing orthonormalized vectors \n");
+  for (int i=0;i<nicd0;i++)
+  {
+    for (int j=0;j<len;j++)
+      printf(" %1.3f",Ut[i*len+j]);
+    printf("\n");
+  }
+#endif
+
+  delete [] dots;
+  delete [] Cn;
 	delete [] gradq0; 
+
+  return;
 }
+
+int ICoord::ic_to_xyz() 
+{
+	cout << "In ic_to_xyz" << endl;
+  int MAX_STEPS = 10; //was 6
+
+  int success = 1;
+
+  int N3 = 3*natoms;
+  //int len0 = min(N3,nbonds+nangles+ntor);
+  int len = nicd0;
+  double** xyzall = new double*[MAX_STEPS+2];
+  for (int i=0;i<MAX_STEPS+2;i++)
+    xyzall[i] = new double[N3];
+  double* magall = new double[MAX_STEPS+2];
+  for (int i=0;i<MAX_STEPS+2;i++)
+    magall[i] = 100.;
+  double* xyz1 = new double[N3];
+  double* xyzd = new double[N3];
+  //double* xyzd0 = new double[N3];
+  double* btit = new double[N3*len];
+  double* dq = new double[len];
+  double* qn = new double[len]; //target IC values
+
+  for (int i=0;i<N3;i++)
+    xyzall[0][i] = coords[i];
+
+  update_ic();
+  bmatp_create();
+  bmat_create();
+
+  for (int i=0;i<len;i++)
+    dq[i] = dq0[i];
+  for (int i=0;i<len;i++)
+    qn[i] = q[i] + dq[i];
+
+#if 1
+    printf(" qn:");
+    for (int i=0;i<len;i++)
+      printf(" %1.4f",qn[i]);
+    printf("\n");
+#endif
+#if 0
+  printf(" dq at start: \n");
+  for (int i=0;i<len;i++)
+    printf(" %1.4f",dq[i]);
+  printf("\n");
+#endif
+
+  double MAX_MOVE = 0.75;
+  double mag = 0.;
+  double magp = 100.;
+  double SCALEBT = 1.5;
+  for (int n=0;n<MAX_STEPS;n++) 
+  {
+    trans(btit,bmatti,N3,len);
+
+    for (int i=0;i<N3;i++) xyzd[i] = 0.;
+    for (int i=0;i<N3;i++)
+    for (int j=0;j<len;j++) 
+      xyzd[i] += btit[len*i+j] * dq[j];
+
+    mag = 0.;
+    for (int i=0;i<N3;i++)
+      mag += xyzd[i]*xyzd[i];
+
+#if 0
+   //was on, why does it exist?
+    if (mag>1.*natoms)
+    { 
+      printf(" rsc");
+      double rsc=1.*natoms/mag;
+      for (int i=0;i<N3;i++)
+        xyzd[i] = xyzd[i]*rsc;
+    }
+#endif
+#if 0
+    for (int i=0;i<N3;i++)
+      if (abs(xyzd[i])>MAX_MOVE)
+        xyzd[i] = sign(xyzd[i])*MAX_MOVE;
+#endif
+
+    for (int i=0;i<N3;i++)
+      xyz1[i] = coords[i] + xyzd[i]/SCALEBT;
+
+    //if(n==0)
+    //  printf(" diff in xyz mag (start) is: %1.6f \n",sqrt(mag));
+    for (int i=0;i<N3;i++)
+      xyzall[n+1][i] = xyz1[i];
+    magall[n] = mag;
+
+    if (mag>magp)
+      SCALEBT *= 1.5;
+    magp = mag;
+
+    for (int i=0;i<N3;i++)
+      coords[i] = xyz1[i];
+    update_ic();
+    bmatp_create();
+    bmat_create();
+
+    for (int i=0;i<len;i++)
+      dq[i] = qn[i] - q[i];
+
+#if 0
+    printf(" dq: \n");
+    for (int i=0;i<len;i++)
+      printf(" %1.4f",dq[i]);
+    printf("\n");
+#endif
+
+    if (mag<0.00005) break;
+  }
+
+#if 0
+  for (int i=0;i<natoms;i++)
+    printf(" dX: %1.3f %1.3f %1.3f \n",xyzd[3*i+0],xyzd[3*i+1],xyzd[3*i+2]);
+  printf("\n");
+#endif
+
+  //printf(" diff in xyz mag (end) is: %1.4f \n",sqrt(mag)); 
+  double MAXMAG = 0.025*natoms;
+  if (sqrt(mag)>MAXMAG)
+  {
+    //printf(" WARNING: diff in xyz mag (end) is: %1.4f, using first step, mag: %1.4f \n",sqrt(mag),sqrt(mag0));
+    ixflag++;
+    double maglow = 100.;
+    int nlow = -1;
+    for (int n=0;n<MAX_STEPS+2;n++)
+    if (magall[n]<maglow)
+    {
+      nlow = n+1;
+      maglow = magall[n];
+    }
+    if (maglow<MAXMAG)
+    {
+      for (int i=0;i<N3;i++)
+        coords[i] = xyzall[nlow][i];
+      printf("W(%6.5f/%i)",maglow,nlow);
+    }
+    else
+    {
+      for (int i=0;i<N3;i++)
+        coords[i] = xyzall[0][i];
+      printf("Wf(%6.5f/%i)",maglow,nlow);
+      success = 0;
+    }
+  }
+  else if (ixflag>0)
+    ixflag = 0;
+
+  delete [] btit;
+  delete [] xyz1;
+  delete [] xyzd;
+  for (int i=0;i<MAX_STEPS+2;i++)
+    delete [] xyzall[i];
+  delete [] magall;
+  delete [] xyzall;
+  delete [] dq;
+  delete [] qn;
+
+  return success;
+}
+
+

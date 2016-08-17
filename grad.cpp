@@ -2,7 +2,7 @@
 
 using namespace std;
 
-void Gradient::grad_read(string gradfile)
+void Gradient::grad_read(string gradfile,double* grad)
 { 
    
   cout <<" Reading gradient" << endl;
@@ -43,9 +43,6 @@ void Gradient::grad_read(string gradfile)
   
   infile.close();
   
-  
-  grad = new double[natoms*3];
-   
   cout <<"  -Reading coordinates...";
   cout << "Opening the grad file" << endl;
   infile.open(gradfile.c_str());
@@ -71,4 +68,9 @@ void Gradient::grad_read(string gradfile)
 }
 
 
-
+void Gradient::print_grad()
+{
+	cout << "printing gradient" << endl; 
+	for (int i=0;i<natoms;i++)
+		cout << grad[3*i] << " " << grad[3*i+1] << " " << grad[3*i+2] << endl; 
+}
