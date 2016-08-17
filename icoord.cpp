@@ -28,9 +28,12 @@ int ICoord::init(string xyzfile,string gradfile)
 	bmatp_to_U();
 	bmat_create();
 	printf("Done creating bmatrix stuff\n");
-	print_q();
+	//print_q();
 	grad_to_q();
+	printf("Done creating delocalized gradient\n");
 	project_grad();
+	bmat_create();
+	print_q();
 	printf("\n");
 	double step = 0.2;
 	printf(" Stepping %1.2f along the constraint vector\n",step);
