@@ -21,21 +21,27 @@ int ICoord::init(string xyzfile,string gradfile)
  print_ic();
 
  grad1.grad_read(gradfile,grad);
- grad1.print_grad();	
-
+	string gradmolden = "ethene_grad.molden";
+	print_grad_molden(gradmolden);
 	bmat_alloc();                                                                                              
 	bmatp_create();
 	bmatp_to_U();
 	bmat_create();
+	printf("Done creating bmatrix stuff\n");
+	print_q();
 	grad_to_q();
 	project_grad();
-	printf("\n\n\n");
-	printf(" Stepping 0.5 along the constraint vector\n");
+	printf("\n");
+	double step = 0.2;
+	printf(" Stepping %1.2f along the constraint vector\n",step);
   for (int i=0;i<nicd0;i++) 
     dq0[i] = 0.;	
-	dq0[nicd0 -1] = 0.5; 
+	dq0[nicd0 - 1] = step;
+	printf("\n New internals \n"); 
 	ic_to_xyz();
 	print_xyz();
+	string moldenfile= "new_ethene.xyz";
+	print_xyz_molden(moldenfile);
  return 1;
 }
 

@@ -47,7 +47,7 @@ void Gradient::grad_read(string gradfile,double* grad)
   cout << "Opening the grad file" << endl;
   infile.open(gradfile.c_str());
   fflush(stdout);
-  cout << "gradfile opened" << endl;
+  cout << "  gradfile opened" << endl;
   fflush(stdout);
   
   
@@ -64,13 +64,7 @@ void Gradient::grad_read(string gradfile,double* grad)
   
    
   infile.close();
-  cout << "Finished reading information from structure file" << endl;
+  cout << " Finished reading information from structure file" << endl;
 }
 
 
-void Gradient::print_grad()
-{
-	cout << "printing gradient" << endl; 
-	for (int i=0;i<natoms;i++)
-		cout << grad[3*i] << " " << grad[3*i+1] << " " << grad[3*i+2] << endl; 
-}

@@ -22,7 +22,6 @@ class Gradient {
 	public: 
    	double* grad; 
 		void grad_read(string gradfile,double* grad);	
-		void print_grad(); 
 };
 
 #endif

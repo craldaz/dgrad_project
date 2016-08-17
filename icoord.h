@@ -66,6 +66,8 @@ class ICoord {
   	int ntor;
 		int isOpt;
 		void print_xyz();
+		void print_xyz_molden(string xyzfile);
+		void print_grad_molden(string gradfile);
   	void print_ic();
 		int init(string xyzfile,string gradfile);
 		int ic_create();	
@@ -97,6 +99,7 @@ class ICoord {
 		int bmat_create();
 		int grad_to_q();
 		void print_gradq();
+		void print_q();
 		void project_grad();
 		int ic_to_xyz();
   	double* Ut;

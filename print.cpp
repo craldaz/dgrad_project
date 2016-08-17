@@ -1,4 +1,5 @@
 #include "icoord.h"
+#include "constants.h"
 
 void ICoord::print_xyz(){
 
@@ -52,4 +53,46 @@ void ICoord::print_ic()
    printf("\n");
 #endif
    printf("\n");
+}
+
+void ICoord::print_xyz_molden(string xyzfile)
+{
+
+	ofstream outFile;
+  outFile.open(xyzfile.c_str());
+  outFile.setf(ios::fixed);
+  outFile.setf(ios::left);
+  outFile << setprecision(6);
+
+	outFile << natoms << endl;
+	outFile << "[Atoms] (Angs)\n";
+	for (int i=0;i<natoms;i++)
+		outFile << anames[i] << "\t" << i+1 << "\t" <<  anumbers[i] << "\t" << coords[3*i+0] << " " << coords[3*i+1] << " " << coords[3*i+2] << endl; 
+
+}
+void ICoord::print_grad_molden(string gradfile)
+{
+	ofstream outFile; 
+	outFile.open(gradfile.c_str());
+	outFile.setf(ios::fixed);
+  outFile.setf(ios::left);
+  outFile << setprecision(6);
+
+	outFile << "[Molden Format]\n";
+	outFile << "[Atoms] (Angs)\n";
+	for (int i=0;i<natoms;i++)
+		outFile << anames[i] << "\t" << i+1 << "\t" <<  anumbers[i] << "\t" << coords[3*i+0] << " " << coords[3*i+1] << " " << coords[3*i+2] << endl; 
+	
+	outFile << "[FREQ]\n";
+	outFile << "-1000.7705092\n";
+	outFile << "[FR-COORD]\n";
+	for (int i=0;i<natoms;i++)
+	{
+		outFile <<anames[i] << "\t" << coords[3*i+0]*ANGtoBOHR <<" " <<  coords[3*i+1]*ANGtoBOHR << " " << coords[3*i+2]*ANGtoBOHR << endl; 
+	}
+
+	outFile << "[FR-NORM-COORD]" <<endl; 
+	outFile << "Vibration 1\n"; 
+	for (int i=0;i<natoms; i++)
+		outFile << grad[3*i+0]*BOHRtoANG<< " " << grad[3*i+1]*BOHRtoANG << " " << grad[3*i+2]*BOHRtoANG << endl; 
 }

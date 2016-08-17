@@ -50,7 +50,7 @@ int ICoord::bmat_alloc()
 int ICoord::bmatp_create() 
 {
 
-  printf(" in bmatp_create \n");
+  //printf(" in bmatp_create \n");
 
   int len = nbonds+nangles+ntor;
   int N3 = 3*natoms;
@@ -117,8 +117,8 @@ int ICoord::bmatp_create()
     bmatp[i*N3+3*a4+2] = dqtdx[11];
   }
 
-  printf(" \n after creating bmatp \n");
-#if 1
+  //printf(" \n after creating bmatp \n");
+#if 0
   printf(" printing bond contributions \n");
   for (int i=0;i<nbonds;i++)
   {
@@ -130,7 +130,7 @@ int ICoord::bmatp_create()
     printf(" \n");
   }
 #endif
-#if 1
+#if 0
   printf(" printing angle contributions \n");
   for (int i=nbonds;i<nbonds+nangles;i++)
   {
@@ -143,7 +143,7 @@ int ICoord::bmatp_create()
   }
 #endif
 
-#if 1
+#if 0
   int nztor = 0;
   double* x = new double[3];
   printf(" printing torsion contributions \n");
@@ -460,7 +460,7 @@ int ICoord::bmatp_to_U()
     G[i*len+j] += bmatp[i*N3+k]*bmatp[j*N3+k];
 #endif
 
-#if 1
+#if 0
   printf(" G: \n");
   for (int i=0;i<len;i++)
   {
@@ -470,15 +470,15 @@ int ICoord::bmatp_to_U()
   }
 #endif
 
-  printf("\n using diagonalize(G) \n");
+  //printf("\n using diagonalize(G) \n");
 //  printf(" before diagonalize: mkl_threads: %i \n",mkl_get_max_threads());
 //  fflush(stdout);
   Diagonalize(G,e,len);
   len_d = N3-6;
-  printf(" after diagonalize \n");
+  //printf(" after diagonalize \n");
 //  fflush(stdout);
 
-#if 1
+#if 0
   printf(" eigenvalues:");
   for (int i=0;i<len;i++)
     printf(" %10.8f",e[i]);
@@ -518,7 +518,7 @@ int ICoord::bmatp_to_U()
   for (int j=0;j<len;j++)
     Ut[(len_d+i)*len+j] = G[i*len+j];
 
-#if 1
+#if 0
   printf(" Ut eigenvalues:");
   for (int i=0;i<len_d;i++)
     printf(" %1.4f",e[len-1-i]);
@@ -549,7 +549,7 @@ int ICoord::bmatp_to_U()
   }
 #endif
 
-#if 1
+#if 0
   printf(" Printing %i nonredundant (column) vectors of U \n",len_d);
   for (int i=0;i<len;i++)
   {
@@ -608,7 +608,7 @@ int ICoord::bmatp_to_U()
 
 int ICoord::bmat_create() 
 {
-  printf(" in bmat_create() \n");
+ // printf(" in bmat_create() \n");
  // fflush(stdout);
 
   int len = nbonds+nangles+ntor;
@@ -618,8 +618,8 @@ int ICoord::bmat_create()
   
   int len_d = nicd0;
 
-  printf(" determining q in delocalized internals \n");
-  printf(" nicd: %i \n",nicd);
+  //printf(" determining q in delocalized internals \n");
+  //printf(" nicd: %i \n",nicd);
   update_ic();
   for (int i=0;i<len_d;i++)
     q[i] = 0.;
@@ -661,7 +661,7 @@ int ICoord::bmat_create()
       q[i] += Ut[len*i+nbonds+nangles+j]*(torfix[j]+torsion_val(torsions[j][0],torsions[j][1],torsions[j][2],torsions[j][3]))*3.14159/180;
 #endif
 
-#if 1
+#if 0
   printf(" printing q: \n");
   for (int i=0;i<len_d;i++)
     printf(" %1.4f",q[i]);
@@ -690,7 +690,7 @@ int ICoord::bmat_create()
   delete [] q0;
 #endif
 
-  printf(" now making bmat in delocalized internals (len: %i len_d: %i) \n",len,len_d);
+  //printf(" now making bmat in delocalized internals (len: %i len_d: %i) \n",len,len_d);
 #if 1
   mat_times_mat(bmat,Ut,bmatp,len_d,N3,len);
 #else
@@ -701,7 +701,7 @@ int ICoord::bmat_create()
     bmat[i*N3+j] += Ut[i*len+k]*bmatp[k*N3+j];
 #endif
 
-#if 1
+#if 0
   printf(" printing bmat in coordinates U \n");
   for (int i=0;i<len_d;i++)
   {
@@ -786,7 +786,7 @@ int ICoord::grad_to_q()
 {
 
 
-  printf(" in grad_to_q \n");
+//  printf(" in grad_to_q \n");
 
   int N3 = 3*natoms;
   int len_d = nicd0;
@@ -815,7 +815,7 @@ int ICoord::grad_to_q()
     gradqprim[i] += Ut[j*len0+i]*gradq[j];
 #endif
 
-  print_gradq();
+  //print_gradq();
 
 
   return 0;
@@ -837,7 +837,7 @@ void ICoord::project_grad()
 {
 	
   int len = nbonds+nangles+ntor;
-	printf(" In project_grad\n"); 
+	printf(" Projecting and schmidting gradient!!!!\n"); 
 
   nicd = nicd0;
 	double* gradq0 = new double[nicd];
@@ -879,7 +879,7 @@ void ICoord::project_grad()
 	for (int j=0;j<len;j++)
 		C[j]=Cn[j];
 #endif
-#if 1
+#if 0
   printf(" projected gradient constraint: ");
   for (int i=0;i<len;i++)
     printf(" %1.3f",gradq0[i]);
@@ -926,7 +926,7 @@ void ICoord::project_grad()
   for (int j=0;j<len;j++)
     printf(" %1.2f/%1.2f\n",Cn[j],Ut[nicd*len+j]);
 #endif
-#if 1
+#if 0
   printf(" printing orthonormalized vectors \n");
   for (int i=0;i<nicd0;i++)
   {
@@ -945,7 +945,7 @@ void ICoord::project_grad()
 
 int ICoord::ic_to_xyz() 
 {
-	cout << "In ic_to_xyz" << endl;
+	//cout << "In ic_to_xyz" << endl;
   int MAX_STEPS = 10; //was 6
 
   int success = 1;
@@ -1107,3 +1107,13 @@ int ICoord::ic_to_xyz()
 }
 
 
+void ICoord::print_q(){
+
+  int len_d = nicd;
+  printf(" printing q: \n");
+  for (int i=0;i<len_d;i++)
+    printf(" %1.4f",q[i]);
+  printf(" \n");
+
+  return;
+}

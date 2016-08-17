@@ -3,5 +3,6 @@
 *.exe
 *.log
 *.xyz
+*.molden
 *.txt
 tags
