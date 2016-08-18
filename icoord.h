@@ -102,6 +102,7 @@ class ICoord {
 		void print_q();
 		void project_grad();
 		int ic_to_xyz();
+		int ic_to_xyz_opt();
   	double* Ut;
   	double* Ut0;
   	double* bmat;

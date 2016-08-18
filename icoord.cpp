@@ -32,16 +32,18 @@ int ICoord::init(string xyzfile,string gradfile)
 	grad_to_q();
 	printf("Done creating delocalized gradient\n");
 	project_grad();
+	printf("Done creating orthonormalized internal coordinates\n");
 	bmat_create();
 	print_q();
 	printf("\n");
-	double step = 0.2;
+	double step = 0.4;
 	printf(" Stepping %1.2f along the constraint vector\n",step);
   for (int i=0;i<nicd0;i++) 
     dq0[i] = 0.;	
 	dq0[nicd0 - 1] = step;
 	printf("\n New internals \n"); 
 	ic_to_xyz();
+ 	//ic_to_xyz_opt();
 	print_xyz();
 	string moldenfile= "new_ethene.xyz";
 	print_xyz_molden(moldenfile);
