@@ -1,5 +1,6 @@
 #include "icoord.h"
 #include "utils.h"
+#include <iostream>
 using namespace std; 
 
 
@@ -21,32 +22,34 @@ int ICoord::init(string xyzfile,string gradfile)
  print_ic();
 
  grad1.grad_read(gradfile,grad);
-	string gradmolden = "ethene_grad.molden";
+	string gradmolden = "grad.molden";
+	printf(" Printing grad to file %s\n",gradmolden.c_str());
 	print_grad_molden(gradmolden);
 	bmat_alloc();                                                                                              
 	bmatp_create();
 	bmatp_to_U();
 	bmat_create();
-	printf("Done creating bmatrix stuff\n");
+	printf(" Done creating bmatrix stuff\n");
 	//print_q();
 	grad_to_q();
-	print_gradq();
-	printf("Done creating delocalized gradient\n");
+	//print_gradq();
+	printf(" Done creating delocalized gradient\n");
 	project_grad();
-	printf("Done creating orthonormalized internal coordinates\n");
+	printf(" Done creating orthonormalized internal coordinates\n");
 	bmat_create();
-	print_q();
+	//print_q();
 	printf("\n");
-	double step = 0.5;
+	double step = -0.2;
 	printf(" Stepping %1.2f along the constraint vector\n",step);
   for (int i=0;i<nicd0;i++) 
     dq0[i] = 0.;	
 	dq0[nicd0 - 1] = step;
-	printf("\n New internals \n"); 
+	printf("\n New geometry \n"); 
 	ic_to_xyz();
  	//ic_to_xyz_opt();
 	print_xyz();
-	string moldenfile= "new_ethene.xyz";
+	string moldenfile= "new_geom.xyz";
+	printf(" Printing new geometry to file %s\n",moldenfile.c_str());
 	print_xyz_molden(moldenfile);
  return 1;
 }

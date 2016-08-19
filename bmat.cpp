@@ -11,7 +11,7 @@ int ICoord::bmat_alloc()
 	int size_ic	= nbonds+nangles+ntor +150; //buffer of 150 for new primitives
 	int size_xyz = 3*natoms; 
   printf(" in bmat_alloc, size_ic: %i size_xyz: %i \n",size_ic-150,size_xyz);
-  printf(" max_bonds: %i max_angles: %i max_torsions: %i \n",max_bonds,max_angles,max_torsions);
+  //printf(" max_bonds: %i max_angles: %i max_torsions: %i \n",max_bonds,max_angles,max_torsions);
   bmat = new double[size_ic*size_xyz+100];
   bmatp = new double[size_ic*size_xyz+1000];
   bmatti = new double[size_ic*size_xyz+100];
@@ -440,7 +440,7 @@ int ICoord::bmatp_to_U()
   int N3 = 3*natoms;
   int max_size_ic = len;
   int size_xyz = N3;
-  printf(" bmatp_to_U. nbonds: %2i nangles: %2i ntorsions: %2i  total: %3i \n",nbonds,nangles,ntor,len);
+  //printf(" bmatp_to_U. nbonds: %2i nangles: %2i ntorsions: %2i  total: %3i \n",nbonds,nangles,ntor,len);
 
   int len_d;
   double* e = new double[len];
@@ -837,49 +837,31 @@ void ICoord::project_grad()
 {
 	
   int len = nbonds+nangles+ntor;
-	printf(" Representing grad in space of internal coordinates U!!!!\n"); 
+	printf(" Representing grad in space of internal coordinates U and orthonormalizing all coordinates\n"); 
 
   nicd = nicd0;
   nicd--;
 
 	double* gradq0 = new double[nicd0];
   double norm = 0.;
-#if 1
   for (int i=0;i<nicd0;i++)
     norm += gradq[i]*gradq[i];
 	  norm=	sqrt(norm);
-	printf("norm %1.2f",norm);
+	//printf("norm %1.2f",norm);
 	for (int i=0;i<nicd0;i++)
 		gradq0[i] = gradq[i]/norm;
 	
+#if 0
   for (int i=0;i<nicd0;i++)
     printf(" %12.10f",gradq0[i]);
   printf("\n");
-#else
-	for (int i=0;i<nicd0;i++)
-		gradq0[i] = gradq[i];
 #endif
-
 	double* Cn = new double[len];
 	for (int i=0;i<len;i++)
 		for (int j=0;j<nicd0;j++)
 			Cn[i]+=gradq0[j]*Ut[j*len+i];
-
-	printf("unormalized gradq vector\n");
-	for (int i=0;i<len;i++)
-		printf("%1.5f ",Cn[i]);
-	printf("\n");
-
-  norm = 0.;
-  for (int i=0;i<len;i++)
-    norm += Cn[i]*Cn[i];
-
-	norm=	sqrt(norm);
-  for (int j=0;j<len;j++)
-    Cn[j] = Cn[j]/norm;
-	
-	printf("norm: %1.3f\n",norm);
-	printf("gradq vector\n");
+#if 0
+	printf("Normalized gradq vector\n");
 	for (int i=0;i<len;i++)
 		printf("%1.5f ",Cn[i]);
 	printf("\n");
@@ -889,8 +871,8 @@ void ICoord::project_grad()
 	for (int i=0;i<len;i++)
 		norm += Cn[i]*Cn[i];
 	norm=	sqrt(norm);
-	printf("norm: %1.3f\n",norm);
-
+	//printf("norm: %1.3f\n",norm);
+#endif
   double* dots = new double[len];
   for (int i=0;i<len;i++) dots[i] =0.;
   for (int i=0;i<len;i++) 
@@ -926,12 +908,12 @@ void ICoord::project_grad()
 	
   for (int j=0;j<len;j++)
     Ut[nicd*len+j] = Cn[j];
-#if 1
+#if 0
   printf(" printing Cn vs. Ut[nicd*len]\n");
   for (int j=0;j<len;j++)
     printf(" %1.2f/%1.2f\n",Cn[j],Ut[nicd*len+j]);
 #endif
-#if 1
+#if 0
   printf(" printing orthonormalized vectors \n");
   for (int i=0;i<nicd0;i++)
   {
@@ -981,13 +963,13 @@ int ICoord::ic_to_xyz()
   for (int i=0;i<len;i++)
     qn[i] = q[i] + dq[i];
 
-#if 1
+#if 0
     printf(" qn:");
     for (int i=0;i<len;i++)
       printf(" %1.4f",qn[i]);
     printf("\n");
 #endif
-#if 1
+#if 0
   printf(" dq at start: \n");
   for (int i=0;i<len;i++)
     printf(" %1.4f",dq[i]);
@@ -1049,7 +1031,7 @@ int ICoord::ic_to_xyz()
     for (int i=0;i<len;i++)
       dq[i] = qn[i] - q[i];
 
-#if 1
+#if 0
     printf(" dq: \n");
     for (int i=0;i<len;i++)
       printf(" %1.4f",dq[i]);

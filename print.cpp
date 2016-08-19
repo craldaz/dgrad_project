@@ -65,9 +65,9 @@ void ICoord::print_xyz_molden(string xyzfile)
   outFile << setprecision(6);
 
 	outFile << natoms << endl;
-	outFile << "[Atoms] (Angs)\n";
+	outFile << "\n";
 	for (int i=0;i<natoms;i++)
-		outFile << anames[i] << "\t" << i+1 << "\t" <<  anumbers[i] << "\t" << coords[3*i+0] << " " << coords[3*i+1] << " " << coords[3*i+2] << endl; 
+		outFile << anames[i] << "\t" << "\t" << coords[3*i+0] << " " << coords[3*i+1] << " " << coords[3*i+2] << endl; 
 
 }
 void ICoord::print_grad_molden(string gradfile)
