@@ -798,7 +798,7 @@ int ICoord::grad_to_q()
 
 
   for (int i=0;i<len_d;i++)
-  for (int j=0;j<N3;j++)
+  for (int j=0;j<N3;j++) 
     gradq[i] += bmatti[i*N3+j] * grad[j];
 
   gradrms = 0.;
@@ -841,39 +841,61 @@ void ICoord::project_grad()
 
   nicd = nicd0;
   nicd--;
+
 	double* gradq0 = new double[nicd0];
+  double norm = 0.;
+#if 1
+  for (int i=0;i<nicd0;i++)
+    norm += gradq[i]*gradq[i];
+	  norm=	sqrt(norm);
+	printf("norm %1.2f",norm);
+	for (int i=0;i<nicd0;i++)
+		gradq0[i] = gradq[i]/norm;
+	
+  for (int i=0;i<nicd0;i++)
+    printf(" %12.10f",gradq0[i]);
+  printf("\n");
+#else
 	for (int i=0;i<nicd0;i++)
 		gradq0[i] = gradq[i];
-
-	//take gradq vector which is represented in basis of delocalized internal coordinates
-	//form internal coordinate vector in basis of  primitive internal coordinates
-	
-	//nonredundant column vectors U
-	//nonredundant row vectors Ut
-
-  double norm = 0.;
-  for (int i=0;i<nicd0;i++)
-    norm += gradq0[i]*gradq0[i];
-  norm = sqrt(norm);
-  for (int j=0;j<nicd0;j++)
-    gradq0[j] = gradq0[j]/norm;
+#endif
 
 	double* Cn = new double[len];
 	for (int i=0;i<len;i++)
-		for (int j=0;j<len;j++)
-			Cn[i]+=gradq0[i]*Ut[i*len+j];
+		for (int j=0;j<nicd0;j++)
+			Cn[i]+=gradq0[j]*Ut[j*len+i];
 
+	printf("unormalized gradq vector\n");
+	for (int i=0;i<len;i++)
+		printf("%1.5f ",Cn[i]);
+	printf("\n");
 
+  norm = 0.;
+  for (int i=0;i<len;i++)
+    norm += Cn[i]*Cn[i];
+
+	norm=	sqrt(norm);
+  for (int j=0;j<len;j++)
+    Cn[j] = Cn[j]/norm;
+	
+	printf("norm: %1.3f\n",norm);
 	printf("gradq vector\n");
 	for (int i=0;i<len;i++)
 		printf("%1.5f ",Cn[i]);
 	printf("\n");
+	
+	norm=0.;
+	printf("check if gradq is normalized");
+	for (int i=0;i<len;i++)
+		norm += Cn[i]*Cn[i];
+	norm=	sqrt(norm);
+	printf("norm: %1.3f\n",norm);
 
   double* dots = new double[len];
   for (int i=0;i<len;i++) dots[i] =0.;
   for (int i=0;i<len;i++) 
   for (int j=0;j<len;j++)
-    dots[i] += Cn[j]*Ut[i*len+j];
+    dots[i] += Cn[j]*Ut[i*len+j]; 
 	
   for (int i=0;i<nicd0;i++)
   {

@@ -30,13 +30,14 @@ int ICoord::init(string xyzfile,string gradfile)
 	printf("Done creating bmatrix stuff\n");
 	//print_q();
 	grad_to_q();
+	print_gradq();
 	printf("Done creating delocalized gradient\n");
 	project_grad();
 	printf("Done creating orthonormalized internal coordinates\n");
 	bmat_create();
 	print_q();
 	printf("\n");
-	double step = 0.4;
+	double step = 0.5;
 	printf(" Stepping %1.2f along the constraint vector\n",step);
   for (int i=0;i<nicd0;i++) 
     dq0[i] = 0.;	
